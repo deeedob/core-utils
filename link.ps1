@@ -44,9 +44,6 @@ foreach ($name in $NativeConfigs) {
   if (Test-Path $src) { New-Symlink $src $tgt }
 }
 
-# ghostty — if installed on Windows
-$GhosttyConf = Join-Path $ConfigSource "ghostty"
-if (Test-Path $GhosttyConf) { New-Symlink $GhosttyConf (Join-Path $ConfigTarget "ghostty") }
 
 Write-Host ""
 Write-Host "Done." -ForegroundColor Cyan

@@ -1,6 +1,9 @@
-require("git"):setup {
-	order = 1500,
-}
+-- Guard against API mismatches between plugin versions and yazi versions.
+-- Run `ya pkg upgrade` if the git plugin fails to load.
+local ok, git = pcall(require, "git")
+if ok then
+	git:setup { order = 1500 }
+end
 
 function Linemode:size_and_mtime()
 	local time = math.floor(self._file.cha.mtime or 0)

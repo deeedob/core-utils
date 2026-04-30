@@ -11,7 +11,7 @@
 #   link               Symlink configs only (requires stow + cloned repo)
 set -euo pipefail
 
-REPO_URL="https://github.com/deeedob/core-utils"
+REPO_URL="git remote add origin git@github.com:deeedob/core-utils.git"
 INSTALL_DIR="${CORE_UTILS_DIR:-$HOME/.local/share/core-utils}"
 
 # ---------------------------------------------------------------------------

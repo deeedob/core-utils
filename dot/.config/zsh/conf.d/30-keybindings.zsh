@@ -2,29 +2,33 @@
 # Vi mode
 # ---------------------------------------------------------------------------
 bindkey -v
-export KEYTIMEOUT=1
+
+# 50ms: enough for multi-key sequences (fzf-git CTRL-G prefix), imperceptible for ESC
+export KEYTIMEOUT=5
 
 # ---------------------------------------------------------------------------
 # Cursor shape per vi mode
+# Use precmd hook instead of zle-line-init to avoid conflicts with
+# plugins (atuin, fast-syntax-highlighting) that also wrap zle-line-init.
 # ---------------------------------------------------------------------------
-_zsh_cursor_beam()  { print -Pn '\e[6 q' }
-_zsh_cursor_block() { print -Pn '\e[2 q' }
+autoload -Uz add-zsh-hook
 
+_zsh_cursor_beam()  { printf '\e[6 q' }
+_zsh_cursor_block() { printf '\e[2 q' }
+
+# Restore beam cursor before each prompt
+add-zsh-hook precmd _zsh_cursor_beam
+
+# Switch cursor shape on vi mode change
 zle-keymap-select() {
   case "$KEYMAP" in
     vicmd)      _zsh_cursor_block ;;
     viins|main) _zsh_cursor_beam  ;;
   esac
 }
-zle-line-init() {
-  zle -K viins
-  _zsh_cursor_beam
-}
-
 zle -N zle-keymap-select
-zle -N zle-line-init
 
-autoload -Uz add-zsh-hook
+# Reset cursor to beam on shell exit
 add-zsh-hook zshexit _zsh_cursor_beam
 
 # ---------------------------------------------------------------------------

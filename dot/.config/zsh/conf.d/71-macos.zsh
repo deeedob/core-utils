@@ -28,7 +28,7 @@ export MACOSX_DEPLOYMENT_TARGET="$(sw_vers -productVersion)"
 # ---------------------------------------------------------------------------
 # Optional SDK paths — only set if the tool is actually installed
 # ---------------------------------------------------------------------------
-if command -v java >/dev/null 2>&1 && [[ -x /usr/libexec/java_home ]]; then
+if (( $+commands[java] )) && [[ -x /usr/libexec/java_home ]]; then
   export JAVA_HOME="$(/usr/libexec/java_home 2>/dev/null)"
 fi
 

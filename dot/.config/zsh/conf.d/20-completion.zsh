@@ -2,7 +2,8 @@ zmodload -i zsh/complist
 zmodload -i zsh/stat
 
 () {
-  local zcd="${XDG_CACHE_HOME}/zsh/zcompdump"
+  local zcd="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
+  mkdir -p "${zcd:h}"
   autoload -Uz compinit
   # Skip the security check (-C) when the dump is fresh (< 20h).
   if [[ -f "$zcd" ]]; then

@@ -1,6 +1,6 @@
 # core-utils
 
-Cross-platform CLI environment. Works on macOS, Linux, and Windows (native).  
+Cross-platform CLI environment. Works on macOS, Linux, and Windows (native).
 Designed to be added as a submodule in a larger dotfiles repo.
 
 **Stack:** zsh · neovim · ghostty · git (lazygit · delta · tig) · fzf · atuin
@@ -29,8 +29,8 @@ make install
 iwr -useb https://raw.githubusercontent.com/deeedob/core-utils/main/bootstrap.ps1 | iex
 ```
 
-Installs [Scoop](https://scoop.sh) if not present, then installs packages and links configs.  
-On Windows, only terminal-compatible configs are linked (git, ripgrep, tig, atuin, lazygit).  
+Installs [Scoop](https://scoop.sh) if not present, then installs packages and links configs.
+On Windows, only terminal-compatible configs are linked (git, ripgrep, tig, atuin, lazygit, yazi).
 Full zsh config applies when using Git Bash or MSYS2.
 
 ### As a submodule (dotfiles integration)
@@ -67,51 +67,8 @@ make link          # re-link all configs (requires stow)
 make update        # pull latest + re-link
 ```
 
-Uses [GNU Stow](https://www.gnu.org/software/stow/): `dot/` is stowed to `$HOME`.  
+Uses [GNU Stow](https://www.gnu.org/software/stow/): `dot/` is stowed to `$HOME`.
 Windows: `link.ps1` creates the same symlinks via PowerShell `mklink`.
-
----
-
-## Zsh
-
-### Config layout
-
-```
-~/.zshenv                 → sets ZDOTDIR only
-~/.config/zsh/
-├── .zshenv               → XDG dirs, PATH, tool env vars
-├── .zprofile             → login-time setup (brew, COMPILE_CORES)
-├── .zshrc                → loads conf.d/ in order
-└── conf.d/
-    ├── 10-options.zsh    → all setopt in one place
-    ├── 20-completion.zsh → compinit + zstyle
-    ├── 30-keybindings.zsh→ vi mode, cursor shapes, readline bindings
-    ├── 40-aliases.zsh    → aliases
-    ├── 50-plugins.zsh    → plugins (auto-cloned, no plugin manager)
-    ├── 60-fzf.zsh        → FZF_DEFAULT_OPTS + shell integration
-    ├── 61-zoxide.zsh     → zoxide (replaces cd)
-    ├── 70-atuin.zsh      → atuin (replaces ctrl-r)
-    ├── 71-macos.zsh      → macOS-only: GNU path overrides, SDK guards
-    └── 80-functions.zsh  → custom functions
-```
-
-### Plugins (auto-cloned on first shell start)
-
-- **fzf-tab** — replace zsh completion menu with fzf  
-- **fast-syntax-highlighting** — syntax highlighting (faster than zsh-syntax-highlighting)  
-- **zsh-autosuggestions** — ghost-text suggestions from history  
-- **zsh-history-substring-search** — up/down arrows search history by prefix  
-- **zsh-you-should-use** — reminds you when an alias exists  
-- **pure** — minimal async prompt  
-- **fzf-git.sh** — fzf keybindings for git objects (see below)  
-
-Update all plugins:
-
-```zsh
-zsh-plugin-update
-```
-
----
 
 ## Key commands
 
@@ -132,14 +89,14 @@ ff -e cpp       Filter by extension
 | `ctrl-y` | Copy path to clipboard |
 | `ctrl-/` | Toggle preview |
 
-### Content search — `fs`
+### Content search — `frg`
 
 Live ripgrep search with fzf, opens result in `$EDITOR` at the matching line.
 
 ```
-fs                    Interactive (type to search)
-fs "error handling"   Pre-fill query
-fs -t cpp             Restrict to file type (rg --type)
+frg                    Interactive (type to search)
+frg "error handling"   Pre-fill query
+frg -t cpp             Restrict to file type (rg --type)
 ```
 
 | Binding | Action |
@@ -158,13 +115,11 @@ gl -d "secret_key"    Filter by diff content (-S)
 
 | Binding | Action |
 |---------|--------|
-| `enter` | Show full commit in pager |
+| `enter` | Open commit in nvim (readonly) |
 | `ctrl-d` | Switch to diff preview |
 | `ctrl-f` | Switch to full-message preview |
 | `ctrl-s` | Back to stat preview |
 | `ctrl-y` | Copy SHA to clipboard |
-| `ctrl-o` | Open commit on GitHub (gh) |
-| `ctrl-n` | Open commit in nvim |
 | `ctrl-b` | Checkout commit |
 
 ### Git object picker — fzf-git.sh
@@ -186,6 +141,7 @@ Example: type `git show ` then `ctrl-g ctrl-h` to pick a commit hash.
 | Command | Description |
 |---------|-------------|
 | `gbc [sha]` | List branches containing a commit (default: HEAD) |
+| `frg [query] [-t type]` | Live ripgrep search → nvim at line |
 | `fcd [path]` | Fuzzy cd into a directory |
 | `fenv` | Fuzzy search env vars, copy value |
 | `fproc` | Fuzzy process viewer / killer |
@@ -197,8 +153,8 @@ Example: type `git show ` then `ctrl-g ctrl-h` to pick a commit hash.
 
 ### Shell history — atuin
 
-Replaces `ctrl-r` with a context-aware history UI backed by SQLite.  
-Up/down arrows still use history-substring-search (unchanged).  
+Replaces `ctrl-r` with a context-aware history UI backed by SQLite.
+Up/down arrows still use history-substring-search (unchanged).
 Local-only mode — no cloud sync.
 
 ---
@@ -217,7 +173,7 @@ Quick reference for the most useful tig bindings (defined in `tigrc`):
 | `g` / `G` | Jump to first / last line |
 | `ctrl-d` / `ctrl-u` | Half-page down / up |
 
-Use tig for read-only exploration (blame, log, search).  
+Use tig for read-only exploration (blame, log, search).
 Use lazygit (`lg`) for interactive staging, rebasing, and branch management.
 
 ---

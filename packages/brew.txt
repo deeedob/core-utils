@@ -41,6 +41,7 @@ yazi
 ouch
 jq
 yq
+lazydocker
 
 # GNU coreutils (macOS: override BSD variants)
 # These are no-ops on Linux where GNU is already default

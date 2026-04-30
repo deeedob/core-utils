@@ -10,7 +10,7 @@ fpath=("$ZDOTDIR/functions" $fpath)
 }
 
 # ---------------------------------------------------------------------------
-# Clipboard helper — cross-platform, returns the correct pipe command
+# Clipboard helper — returns the correct pipe command for the current platform
 # ---------------------------------------------------------------------------
 _clip_cmd() {
   if   (( $+commands[pbcopy]   )); then echo "pbcopy"
@@ -44,16 +44,16 @@ y() {
   if cwd="$(command cat -- "$tmp")" && [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
     builtin cd -- "$cwd"
   fi
-  rm -f -- "$tmp"
+  command rm -f -- "$tmp"  # bypass rm='rm -iv' alias: suppress verbose output
 }
 
 # ---------------------------------------------------------------------------
 # ff — Find Files (fd + fzf → open in $EDITOR)
 #
 # Usage: ff [path] [-e ext]
-#   No args    Search from CWD
-#   ff src/    Search from path
-#   ff -e cpp  Filter by extension
+#   ff              Search from CWD
+#   ff src/         Search from path
+#   ff -e cpp       Filter by extension
 #
 # fzf bindings:
 #   enter      Open in $EDITOR (nvim)
@@ -62,7 +62,8 @@ y() {
 #   ctrl-/     Toggle preview
 # ---------------------------------------------------------------------------
 ff() {
-  local search_path='.' extra_fd_args=()
+  local search_path='.'
+  local -a extra_fd_args
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -102,23 +103,24 @@ fcd() {
 }
 
 # ---------------------------------------------------------------------------
-# fs — Find String (live ripgrep + fzf → open in $EDITOR at matching line)
+# frg — Find with Ripgrep (live ripgrep + fzf → open in $EDITOR at line)
 #
-# Usage: fs [initial-query] [-t type]
-#   fs                  Interactive live search
-#   fs "error handling"  Pre-fill query
-#   fs -t cpp           Restrict to filetype (rg --type)
+# Usage: frg [initial-query] [-t type]
+#   frg                   Interactive live search
+#   frg "error handling"  Pre-fill query
+#   frg -t cpp            Restrict to filetype (rg --type)
 #
 # fzf bindings:
 #   enter      Open in $EDITOR at matching line
 #   ctrl-y     Copy "file:line" to clipboard
 #   ctrl-/     Toggle preview
 # ---------------------------------------------------------------------------
-fs() {
-  (( $+commands[rg]  )) || { print "fs: ripgrep (rg) not found" >&2; return 1 }
-  (( $+commands[fzf] )) || { print "fs: fzf not found"          >&2; return 1 }
+frg() {
+  (( $+commands[rg]  )) || { print "frg: ripgrep (rg) not found" >&2; return 1 }
+  (( $+commands[fzf] )) || { print "frg: fzf not found"          >&2; return 1 }
 
-  local rg_type_args=() initial_query=''
+  local -a rg_type_args
+  local initial_query=''
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -142,7 +144,7 @@ fs() {
         --preview='bat --color=always --style=numbers --line-range={2}:+60 {1} 2>/dev/null' \
         --preview-window='right:55%:+{2}+3/3:wrap' \
         --bind="ctrl-y:execute-silent(echo -n {1}:{2} | $CLIP)" \
-        --header='enter:open-in-nvim  ctrl-y:copy-location  ctrl-/:preview'
+        --header='enter:nvim-at-line  ctrl-y:copy-location  ctrl-/:preview'
   )
 
   [[ -z "$result" ]] && return
@@ -155,19 +157,17 @@ fs() {
 # gl — Git Log browser (fzf-powered)
 #
 # Usage: gl [query] [-d query]
-#   gl                  Browse full log
-#   gl "fix auth"       Filter commits whose message matches "fix auth" (--grep)
-#   gl -d "secret_key"  Filter commits touching "secret_key" in diff (-S)
+#   gl                  Browse full log (stat preview)
+#   gl "fix auth"       Pre-filter commits by message (--grep)
+#   gl -d "needle"      Pre-filter commits touching string in diff (-S)
 #
-# fzf bindings (all within the same session):
-#   enter          Show full commit in pager
-#   ctrl-d         Toggle diff view
-#   ctrl-f         Toggle full-message view
-#   ctrl-s         Back to stat view (default)
-#   ctrl-y         Copy SHA to clipboard
-#   ctrl-o         Open commit on GitHub (gh browse)
-#   ctrl-n         Open commit in nvim
-#   ctrl-b         Checkout commit
+# fzf bindings:
+#   enter      Open commit in nvim (readonly)
+#   ctrl-d     Switch to diff preview
+#   ctrl-f     Switch to full-message preview
+#   ctrl-s     Back to stat preview (default)
+#   ctrl-y     Copy SHA to clipboard
+#   ctrl-b     Checkout commit (exits fzf)
 # ---------------------------------------------------------------------------
 gl() {
   (( $+commands[git] )) || { print "gl: git not found" >&2; return 1 }
@@ -182,7 +182,7 @@ gl() {
     esac
   done
 
-  local git_log_cmd git_log_args=()
+  local -a git_log_args
   case "$mode" in
     msg)  [[ -n "$query" ]] && git_log_args+=(--grep="$query") ;;
     diff) [[ -n "$query" ]] && git_log_args+=(-S "$query") ;;
@@ -200,11 +200,9 @@ gl() {
         --bind='ctrl-f:change-preview(git show --color=always {1})' \
         --bind='ctrl-s:change-preview(git show --stat --color=always {1})' \
         --bind="ctrl-y:execute-silent(echo -n {1} | $CLIP)" \
-        --bind='ctrl-o:execute-silent(gh browse {1} 2>/dev/null)' \
-        --bind='ctrl-n:execute(git show {1} | nvim - +":set ft=git")' \
+        --bind='enter:execute(git show {1} | nvim +"set ft=git nomod" -)' \
         --bind='ctrl-b:execute(git checkout {1})+abort' \
-        --bind='enter:execute(git show --stat --color=always {1} | less -R)' \
-        --header='ctrl-d:diff  ctrl-f:full  ctrl-s:stat  ctrl-y:copy  ctrl-o:browser  ctrl-n:nvim  ctrl-b:checkout'
+        --header='enter:nvim  ctrl-d:diff  ctrl-f:full  ctrl-s:stat  ctrl-y:copy  ctrl-b:checkout'
 }
 
 # ---------------------------------------------------------------------------
@@ -240,8 +238,7 @@ fproc() {
   local pid
   pid=$(
     ps aux | tail -n +2 | \
-      fzf --header-lines=0 \
-          --preview='echo {}' \
+      fzf --preview='echo {}' \
           --preview-window=down:3:wrap \
           --header='enter:kill(TERM)  ctrl-k:kill(KILL)' \
           --bind='ctrl-k:execute-silent(echo {} | awk "{print \$2}" | xargs kill -9)' | \

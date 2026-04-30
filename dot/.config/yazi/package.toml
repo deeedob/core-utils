@@ -1,7 +1,7 @@
 [[plugin.deps]]
 use = "lpnh/fr"
-rev = "92edf0b"
-hash = "b0edc5e9b7f44b2d3303e74f785d0bc9"
+rev = "aa88cd4"
+hash = "8b0e87c3176e0d44f79a8656f79f0fa"
 
 [[plugin.deps]]
 use = "Reledia/hexyl"
@@ -10,13 +10,13 @@ hash = "50da29476e744dba37d77fb209328fd1"
 
 [[plugin.deps]]
 use = "boydaihungst/mediainfo"
-rev = "436cb5f"
-hash = "144c0ac7a449fcab4e78e942eb41702c"
+rev = "49f5ab7"
+hash = "6e3b5e58f985cc2d625e0030dc35b1b2"
 
 [[plugin.deps]]
 use = "ndtoan96/ouch"
-rev = "2496cd9"
-hash = "5b9dea47776a30946cfbf83232d18fb1"
+rev = "406ce6c"
+hash = "f5afc904d5106ee368c8aa2ded43bd74"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
@@ -25,10 +25,10 @@ hash = "6849444b7c2df08eace83f3f86fb55a3"
 
 [[flavor.deps]]
 use = "dangooddd/kanagawa"
-rev = "31167ed"
-hash = "a04e157148549bacbb2831aab0e6e8cb"
+rev = "04985d1"
+hash = "c69a63981e254a3a06a11c2bf0e6af1d"
 
 [[flavor.deps]]
 use = "Chromium-3-Oxide/everforest-medium"
-rev = "3d5f847"
-hash = "9b4190e2447f2c843fee23ea5f068f6"
+rev = "4eede31"
+hash = "2f79b3c6afefef9b1c269edd38b45fab"

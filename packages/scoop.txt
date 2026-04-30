@@ -13,6 +13,7 @@ eza
 zoxide
 delta
 lazygit
+lazydocker
 tig
 gh
 atuin

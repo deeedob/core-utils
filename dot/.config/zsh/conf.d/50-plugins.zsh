@@ -8,7 +8,7 @@ ZPLUGINDIR="$ZDOTDIR/plugins"
 _zsh_plugin_clone() {
   local -A urls=(
     fzf-tab                      'https://github.com/Aloxaf/fzf-tab'
-    fast-syntax-highlighting     'https://github.com/zdharma-continuum/fast-syntax-highlighting'
+    zsh-syntax-highlighting      'https://github.com/zsh-users/zsh-syntax-highlighting'
     zsh-autosuggestions          'https://github.com/zsh-users/zsh-autosuggestions'
     zsh-history-substring-search 'https://github.com/zsh-users/zsh-history-substring-search'
     zsh-completions              'https://github.com/zsh-users/zsh-completions'
@@ -35,7 +35,7 @@ _zsource() {
 
 zsh-plugin-update() {
   local name dir
-  for name in fzf-tab fast-syntax-highlighting zsh-autosuggestions \
+  for name in fzf-tab zsh-syntax-highlighting zsh-autosuggestions \
               zsh-history-substring-search zsh-completions \
               zsh-you-should-use pure fzf-git; do
     dir="$ZPLUGINDIR/$name"
@@ -106,35 +106,46 @@ _zsource zsh-completions/zsh-completions.plugin.zsh
 # CTRL-G CTRL-H: hashes   CTRL-G CTRL-B: branches  CTRL-G CTRL-T: tags
 # CTRL-G CTRL-R: remotes  CTRL-G CTRL-F: files (changed)
 # ---------------------------------------------------------------------------
-if (( $+commands[fzf] && $+commands[git] )); then
-  local _fzf_git="$ZPLUGINDIR/fzf-git/fzf-git.sh"
-  [[ -f "$_fzf_git" ]] || _zsh_plugin_clone fzf-git
-  [[ -f "$_fzf_git" ]] && source "$_fzf_git"
-  unset _fzf_git
+if (( $+commands[fzf] )) && (( $+commands[git] )); then
+  _fzf_git_script="$ZPLUGINDIR/fzf-git/fzf-git.sh"
+  [[ -f "$_fzf_git_script" ]] || _zsh_plugin_clone fzf-git
+  if [[ -f "$_fzf_git_script" ]]; then
+    # __fzf_git_init runs 54 eval-bindkey calls (~14ms). Defer to first prompt
+    # so the cost is paid after the shell is visible, not during cold start.
+    _fzf_git_defer() {
+      add-zsh-hook -d precmd _fzf_git_defer
+      source "$_fzf_git_script"
+      unset _fzf_git_script
+    }
+    add-zsh-hook precmd _fzf_git_defer
+  else
+    unset _fzf_git_script
+  fi
 fi
 
 # ---------------------------------------------------------------------------
-# fast-syntax-highlighting (must be near last, before pure prompt)
+# zsh-syntax-highlighting (must be near last, before pure prompt)
 # ---------------------------------------------------------------------------
-_zsource fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+_zsource zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-typeset -A FAST_HIGHLIGHT_STYLES
-FAST_HIGHLIGHT_STYLES[command]='fg=blue,bold'
-FAST_HIGHLIGHT_STYLES[builtin]='fg=blue,bold'
-FAST_HIGHLIGHT_STYLES[function]='fg=blue,bold'
-FAST_HIGHLIGHT_STYLES[alias]='fg=cyan,bold'
-FAST_HIGHLIGHT_STYLES[path]='fg=white,underline'
-FAST_HIGHLIGHT_STYLES[single-quoted-argument]='fg=yellow'
-FAST_HIGHLIGHT_STYLES[double-quoted-argument]='fg=yellow'
-FAST_HIGHLIGHT_STYLES[globbing]='fg=magenta,bold'
-FAST_HIGHLIGHT_STYLES[history-expansion]='fg=magenta,bold'
-FAST_HIGHLIGHT_STYLES[unknown-token]='fg=red,bold'
-FAST_HIGHLIGHT_STYLES[reserved-word]='fg=yellow,bold'
-FAST_HIGHLIGHT_STYLES[redirection]='fg=green,bold'
-FAST_HIGHLIGHT_STYLES[comment]='fg=245'
-FAST_HIGHLIGHT_STYLES[bracket-level-1]='fg=blue,bold'
-FAST_HIGHLIGHT_STYLES[bracket-level-2]='fg=cyan,bold'
-FAST_HIGHLIGHT_STYLES[bracket-level-3]='fg=magenta,bold'
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+typeset -A ZSH_HIGHLIGHT_STYLES
+ZSH_HIGHLIGHT_STYLES[command]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[builtin]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[function]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[alias]='fg=cyan,bold'
+ZSH_HIGHLIGHT_STYLES[path]='fg=white,underline'
+ZSH_HIGHLIGHT_STYLES[single-quoted-argument]='fg=yellow'
+ZSH_HIGHLIGHT_STYLES[double-quoted-argument]='fg=yellow'
+ZSH_HIGHLIGHT_STYLES[globbing]='fg=magenta,bold'
+ZSH_HIGHLIGHT_STYLES[history-expansion]='fg=magenta,bold'
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red,bold'
+ZSH_HIGHLIGHT_STYLES[reserved-word]='fg=yellow,bold'
+ZSH_HIGHLIGHT_STYLES[redirection]='fg=green,bold'
+ZSH_HIGHLIGHT_STYLES[comment]='fg=245'
+ZSH_HIGHLIGHT_STYLES[bracket-level-1]='fg=blue,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-2]='fg=cyan,bold'
+ZSH_HIGHLIGHT_STYLES[bracket-level-3]='fg=magenta,bold'
 
 # ---------------------------------------------------------------------------
 # Pure prompt (must be last)

@@ -31,8 +31,6 @@ setopt ALWAYS_TO_END        # move cursor to end after completion
 setopt COMPLETE_IN_WORD     # complete within word
 setopt NO_LIST_BEEP
 
-# Misc
-setopt CORRECT              # suggest corrections for commands
 setopt INTERACTIVE_COMMENTS # allow # comments in interactive shell
 setopt NO_BEEP
 setopt LONG_LIST_JOBS       # show PID in job notifications
