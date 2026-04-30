@@ -1,0 +1,19 @@
+# apt.txt — Debian/Ubuntu packages
+# Note: many tools below are installed via brew.txt as brew supplements apt
+
+# Shell
+zsh
+stow
+
+# Build deps (for brew on Linux)
+build-essential
+curl
+file
+git
+
+# Tools available in apt repos
+ripgrep
+fd-find
+bat
+tig
+jq

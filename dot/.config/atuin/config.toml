@@ -1,0 +1,32 @@
+# Atuin configuration — local-only history database
+# Docs: https://docs.atuin.sh/configuration/config/
+
+## Disable sync (local-only mode)
+auto_sync = false
+sync_address = ""
+sync_frequency = "0"
+
+## Search mode: fuzzy is more forgiving
+search_mode = "fuzzy"
+
+## Filter mode: default shows history from all contexts
+## Use "directory" to scope to current dir, "session" for current session
+filter_mode = "global"
+filter_mode_shell_up_arrow = "session"
+
+## Style
+style = "compact"
+show_preview = true
+max_preview_height = 4
+
+## Secrets patterns — commands matching these are NOT saved
+history_filter = [
+  "^export .*=",
+  "^[A-Z_]+=",       # bare env var assignments
+  "^pass ",
+  "^gpg ",
+  "^ssh-keygen ",
+]
+
+## Timestamps in search UI
+show_help = false

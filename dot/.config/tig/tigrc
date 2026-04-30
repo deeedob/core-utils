@@ -1,0 +1,102 @@
+# ---------------------------------------------------------------------------
+# Tig configuration
+# Complements lazygit: use tig for read-only exploration (blame, log
+# browsing, searching) — especially on CI/remote where lazygit may not be.
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Views
+# ---------------------------------------------------------------------------
+set main-view   = line-number:no id:yes,color date:short author:abbreviated \
+                  commit-title:yes,graph,refs,overflow=no
+set blame-view  = line-number:yes,interval=5 id:yes,color date:short \
+                  author:abbreviated text
+set refs-view   = line-number:no id:yes,color date:short author:abbreviated \
+                  ref title
+set stash-view  = line-number:no id:yes date:short author:abbreviated \
+                  commit-title
+set grep-view   = file-name:yes line-number:yes,interval=1 text
+
+# ---------------------------------------------------------------------------
+# Behaviour
+# ---------------------------------------------------------------------------
+set tab-size         = 4
+set diff-options     = -m --first-parent
+set blame-options    = -C -C -C         # track code movement across files
+set mailmap          = true
+set mouse            = true
+set mouse-scroll     = 3
+set refresh-mode     = auto
+set ignore-case      = smart-case
+set vertical-split   = auto
+
+# ---------------------------------------------------------------------------
+# Colors  (dark theme matching delta/Kanagawa)
+# ---------------------------------------------------------------------------
+color cursor              black  green  bold
+color title-focus         black  blue   bold
+color title-blur          black  blue
+color status              green  default
+color delimiter           magenta default
+color date                blue   default
+color author              cyan   default
+color id                  yellow default
+color filename            blue   default
+color line-number         cyan   default
+color diff-header         yellow default bold
+color diff-index          blue   default
+color diff-chunk          magenta default bold
+color diff-add            green  default
+color diff-del            red    default
+
+# ---------------------------------------------------------------------------
+# Navigation — vi-consistent, matches lazygit conventions
+# ---------------------------------------------------------------------------
+bind generic g  move-first-line
+bind generic G  move-last-line
+bind generic <Ctrl-d> move-half-page-down
+bind generic <Ctrl-u> move-half-page-up
+bind generic <Ctrl-f> move-page-down
+bind generic <Ctrl-b> move-page-up
+
+# ---------------------------------------------------------------------------
+# Actions — consistent key patterns across all fzf/tig/lazygit
+#   e → edit in $EDITOR
+#   y → yank/copy SHA
+#   o → open in browser (gh)
+#   D → show full diff
+# ---------------------------------------------------------------------------
+
+# Open file / diff in $EDITOR
+bind generic e  @sh -c "${EDITOR:-nvim} -- '%(file)'"
+bind main    e  @sh -c "${EDITOR:-nvim} -- '%(file)'"
+bind blame   e  @sh -c "${EDITOR:-nvim} +%(lineno) -- '%(file)'"
+bind diff    e  @sh -c "${EDITOR:-nvim} +%(lineno) -- '%(file)'"
+
+# Copy SHA to clipboard (cross-platform)
+bind generic y  @sh -c "printf '%s' '%(commit)' | \
+  { pbcopy 2>/dev/null || \
+    xclip -selection clipboard 2>/dev/null || \
+    wl-copy 2>/dev/null || \
+    clip.exe 2>/dev/null; \
+  } && echo 'Copied: %(commit)'"
+
+# Open commit in browser
+bind main    o  @sh -c "gh browse '%(commit)' 2>/dev/null || echo 'gh not found'"
+bind generic o  @sh -c "gh browse '%(commit)' 2>/dev/null || echo 'gh not found'"
+
+# Full diff with delta
+bind generic D  @sh -c "git diff '%(commit)^!' | delta | less -R"
+bind main    D  @sh -c "git show --patch '%(commit)' | delta | less -R"
+
+# Interactive rebase from selected commit
+bind main    r  @sh -c "git rebase -i '%(commit)^'"
+
+# Stage/unstage hunk (in status/diff views)
+bind status  u  update
+
+# ---------------------------------------------------------------------------
+# Custom views
+# ---------------------------------------------------------------------------
+# Show all branches graph
+bind main    A  @sh -c "tig log --all"

@@ -1,0 +1,28 @@
+# Global gitignore — applies to all repos
+# ~/.config/git/ignore is loaded automatically by git (no core.excludefile needed)
+
+# IDEs
+**/.idea/
+**/.vscode/
+*.code-workspace
+
+# Build artifacts
+**/build*/
+**/cmake-build-*/
+**/cmake-*/
+**/compile_commands.json
+**/.cache/
+
+# OS
+.DS_Store
+**/.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Secrets / local config
+.env
+.env.local
+*.local
+
+# Claude Code
+**/.claude/settings.local.json

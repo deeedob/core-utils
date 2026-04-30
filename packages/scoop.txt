@@ -1,0 +1,25 @@
+# scoop.txt — Windows packages via Scoop
+# Buckets added automatically by bootstrap.ps1: extras, nerd-fonts, versions
+#
+# Format: one package name per line (bucket prefix optional for main bucket)
+
+git
+neovim
+fzf
+fd
+ripgrep
+bat
+eza
+zoxide
+delta
+lazygit
+tig
+gh
+atuin
+btop
+dust
+tealdeer
+xh
+yazi
+jq
+yq

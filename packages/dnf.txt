@@ -1,0 +1,9 @@
+# dnf.txt — Fedora/RHEL packages
+# Note: many modern tools not in dnf repos; brew.txt covers the rest
+zsh
+stow
+fd-find
+ripgrep
+bat
+tig
+jq

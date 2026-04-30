@@ -1,0 +1,23 @@
+# pacman.txt — Arch Linux packages (pacman + AUR)
+zsh
+stow
+fzf
+fd
+ripgrep
+bat
+eza
+zoxide
+sd
+git-delta
+lazygit
+tig
+gh
+atuin
+btop
+dust
+tealdeer
+xh
+yazi
+ouch
+jq
+yq

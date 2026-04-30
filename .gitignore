@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Zsh plugins (auto-cloned, not tracked)
+dot/.config/zsh/plugins/
+
+# Zsh sessions
+dot/.config/zsh/.zsh_sessions/
+
+# Compiled zsh files
+*.zwc
+*.zwc.old
+
+# Atuin DB (local, not tracked)
+dot/.local/share/atuin/
+
+# Editor
+*.swp
+*~

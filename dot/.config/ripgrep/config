@@ -1,0 +1,32 @@
+# Ripgrep configuration — loaded via RIPGREP_CONFIG_PATH (set in .zshenv)
+
+# Smart case: case-insensitive unless query contains uppercase
+--smart-case
+
+# Follow symlinks
+--follow
+
+# Search hidden files/dirs by default
+--hidden
+
+# Always exclude
+--glob=!.git/
+--glob=!node_modules/
+--glob=!.DS_Store
+--glob=!*.lock
+--glob=!package-lock.json
+--glob=!yarn.lock
+--glob=!Cargo.lock
+--glob=!*.min.js
+--glob=!*.min.css
+--glob=!dist/
+--glob=!build/
+--glob=!target/
+
+# Colors
+--colors=line:fg:yellow
+--colors=line:style:bold
+--colors=path:fg:blue
+--colors=path:style:bold
+--colors=match:fg:red
+--colors=match:style:bold

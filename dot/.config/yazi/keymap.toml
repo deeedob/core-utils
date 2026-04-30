@@ -1,0 +1,19 @@
+[[mgr.prepend_keymap]]
+on = ["f", "w"]
+run = "plugin fr rg"
+desc = "Search file by content (rg)"
+
+[[mgr.prepend_keymap]]
+on = ["C"]
+run = "plugin ouch"
+desc = "Compress with ouch"
+
+[[mgr.prepend_keymap]]
+on  = [ "g", "s" ]
+run = "plugin smart-tab"
+desc = "Create a tab and enter the hovered directory"
+
+[[mgr.prepend_keymap]]
+on = [ "S" ]
+run = "plugin du-size"
+desc = "Open gdu here"

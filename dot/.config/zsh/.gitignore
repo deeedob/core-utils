@@ -1,0 +1,5 @@
+# Auto-cloned plugins — not tracked, managed by zsh-plugin-update
+plugins/
+
+# Sessions
+.zsh_sessions/

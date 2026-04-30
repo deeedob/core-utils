@@ -1,0 +1,50 @@
+# brew.txt — packages installed via Homebrew (macOS + Linux)
+# Used by: bootstrap.sh on macOS; as supplement on Linux
+
+# Shell
+zsh
+fzf
+stow
+
+# Modern file tools
+fd
+ripgrep
+bat
+eza
+zoxide
+sd
+
+# Git
+git
+git-delta
+lazygit
+git-revise
+git-absorb
+tig
+gh
+
+# Shell history
+atuin
+
+# System monitoring
+btop
+dust
+
+# Help / docs
+tealdeer
+
+# HTTP
+xh
+
+# File management
+yazi
+ouch
+jq
+yq
+
+# GNU coreutils (macOS: override BSD variants)
+# These are no-ops on Linux where GNU is already default
+coreutils
+findutils
+gnu-sed
+grep
