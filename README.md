@@ -1,7 +1,6 @@
 # core-utils
 
 Cross-platform CLI environment. Works on macOS, Linux, and Windows (native).
-Designed to be added as a submodule in a larger dotfiles repo.
 
 **Stack:** zsh · neovim · ghostty · git (lazygit · delta · tig) · fzf · atuin
 
@@ -9,10 +8,12 @@ Designed to be added as a submodule in a larger dotfiles repo.
 
 ## Install
 
+`bootstrap.cmd` is the single setup file. Run it with Bash on macOS/Linux, or run it directly from PowerShell on Windows.
+
 ### macOS / Linux
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/deeedob/core-utils/main/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/deeedob/core-utils/main/bootstrap.cmd | bash
 ```
 
 Or clone manually:
@@ -20,29 +21,19 @@ Or clone manually:
 ```bash
 git clone --recurse-submodules https://github.com/deeedob/core-utils ~/.local/share/core-utils
 cd ~/.local/share/core-utils
-make install
+bash bootstrap.cmd install
 ```
 
 ### Windows (PowerShell, run as Admin)
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/deeedob/core-utils/main/bootstrap.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/deeedob/core-utils/main/bootstrap.cmd -OutFile bootstrap.cmd
+.\bootstrap.cmd
 ```
 
 Installs [Scoop](https://scoop.sh) if not present, then installs packages and links configs.
 On Windows, only terminal-compatible configs are linked (git, ripgrep, tig, atuin, lazygit, yazi).
 Full zsh config applies when using Git Bash or MSYS2.
-
-### As a submodule (dotfiles integration)
-
-```bash
-cd ~/dotfiles
-git submodule add https://github.com/deeedob/core-utils core-utils
-# Then in your dotfiles link.sh:
-bash core-utils/link.sh
-```
-
----
 
 ## What gets installed
 
@@ -56,19 +47,7 @@ bash core-utils/link.sh
 | Help | tealdeer (tldr) |
 | Misc | yazi, jq, yq |
 
-macOS: GNU coreutils, findutils, gnu-sed, grep (override BSD variants).
-
 ---
-
-## Symlink management
-
-```bash
-make link          # re-link all configs (requires stow)
-make update        # pull latest + re-link
-```
-
-Uses [GNU Stow](https://www.gnu.org/software/stow/): `dot/` is stowed to `$HOME`.
-Windows: `link.ps1` creates the same symlinks via PowerShell `mklink`.
 
 ## Key commands
 

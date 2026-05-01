@@ -1,5 +1,5 @@
 # brew.txt — packages installed via Homebrew (macOS + Linux)
-# Used by: bootstrap.sh on macOS; as supplement on Linux
+# Used by: bootstrap.cmd on macOS; as supplement on Linux
 
 # Shell
 zsh
