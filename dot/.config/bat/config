@@ -1,0 +1,14 @@
+# bat configuration
+# https://github.com/sharkdp/bat
+
+# Theme — Nord: blue-grey tones that complement Kanagawa terminal colorscheme
+--theme=Nord
+
+# Show line numbers, git change markers, and filename header
+--style=numbers,changes,header
+
+# Always use colors when writing to a pipe (fzf previews, etc.)
+--color=always
+
+# Use italic text in supported terminals
+--italic-text=always

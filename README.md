@@ -157,16 +157,6 @@ Use lazygit (`lg`) for interactive staging, rebasing, and branch management.
 
 ---
 
-## Git config highlights
-
-- `branch.sort = -committerdate` — newest branches first in `git branch`
-- `push.autoSetupRemote = true` — no more `--set-upstream`
-- `delta` with `side-by-side` and `line-numbers` enabled
-- `rebase.autoSquash = true` — `--fixup` commits squash automatically
-- `rerere.enabled = true` — remember conflict resolutions
-
----
-
 ## Aliases reference
 
 ### Git

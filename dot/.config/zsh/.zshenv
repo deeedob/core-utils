@@ -33,6 +33,12 @@ export LANG="${LANG:-en_US.UTF-8}"
 export LC_ALL="${LC_ALL:-en_US.UTF-8}"
 
 # ---------------------------------------------------------------------------
+# Tool defaults
+# ---------------------------------------------------------------------------
+# bat: Nord theme matches Kanagawa terminal palette; config also at ~/.config/bat/config
+export BAT_THEME="Nord"
+
+# ---------------------------------------------------------------------------
 # Tool-specific XDG compliance
 # ---------------------------------------------------------------------------
 export CARGO_HOME="$XDG_DATA_HOME/cargo"

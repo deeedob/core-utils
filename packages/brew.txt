@@ -29,6 +29,9 @@ atuin
 # System monitoring
 btop
 dust
+duf
+dua-cli
+procs
 
 # Help / docs
 tealdeer

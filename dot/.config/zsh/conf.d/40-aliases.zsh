@@ -44,11 +44,27 @@ if (( $+commands[bat] )); then
 fi
 
 # ---------------------------------------------------------------------------
-# System info
+# System info — modern replacements
 # ---------------------------------------------------------------------------
-alias df='df -h'
-alias du='du -h'
-(( $+commands[dust]  )) && alias duu='dust'
+# duf: disk usage/free per filesystem (replaces df)
+if (( $+commands[duf] )); then
+  alias df='duf'
+else
+  alias df='df -h'
+fi
+
+# dua: interactive directory size browser (replaces du/ncdu)
+if (( $+commands[dua] )); then
+  alias du='dua'
+  alias ncdu='dua'
+else
+  alias du='du -h'
+fi
+(( $+commands[dust]  )) && alias duu='dust'  # dust: non-interactive du tree
+
+# procs: colored, searchable process list (replaces ps for interactive use)
+(( $+commands[procs] )) && alias ps='procs'
+
 (( $+commands[btop]  )) && alias top='btop'
 (( $+commands[tldr]  )) && alias help='tldr'
 

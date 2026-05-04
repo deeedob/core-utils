@@ -5,6 +5,14 @@ if ok then
 	git:setup { order = 1500 }
 end
 
+-- Relative vim-style motions (3j, 5k, 2gg, …).
+-- show_numbers = "relative" draws relative line numbers in the file panel.
+-- show_motion  = true shows the accumulated count in the status bar.
+local ok_rm, rm = pcall(require, "relative-motions")
+if ok_rm then
+	rm:setup { show_numbers = "relative", show_motion = true, enter_mode = "first" }
+end
+
 function Linemode:size_and_mtime()
 	local time = math.floor(self._file.cha.mtime or 0)
 	time = time == 0 and "" or os.date("%d.%m %H:%M", time)

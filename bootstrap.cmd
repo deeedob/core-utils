@@ -192,6 +192,15 @@ link_configs() {
   done
 }
 
+install_yazi_plugins() {
+  if ! command -v ya >/dev/null 2>&1; then
+    warn "ya (yazi) not found — skipping yazi plugin installation."
+    return
+  fi
+  info "Installing yazi plugins and flavors..."
+  ya pkg install 2>&1 | grep -v '^$' || warn "ya pkg install failed (non-fatal)"
+}
+
 CMD="install"
 NO_PACKAGES=0
 NO_LINK=0
@@ -225,16 +234,19 @@ case "$CMD" in
     clone_or_update
     [[ "$NO_PACKAGES" -eq 1 ]] || install_packages
     [[ "$NO_LINK" -eq 1 ]] || link_configs
+    [[ "$NO_LINK" -eq 1 ]] || install_yazi_plugins
     success "Install complete. Open a new shell to apply changes."
     ;;
   update)
     clone_or_update
     [[ "$NO_LINK" -eq 1 ]] || link_configs
+    [[ "$NO_LINK" -eq 1 ]] || install_yazi_plugins
     success "Update complete."
     ;;
   link)
     INSTALL_DIR="$(script_dir)"
     link_configs
+    install_yazi_plugins
     success "Configs linked."
     ;;
 esac
@@ -350,7 +362,7 @@ function Link-Configs {
   Info "Linking core-utils to $homeDir..."
   New-CoreUtilsSymlink (Join-Path $dotDir ".zshenv") (Join-Path $homeDir ".zshenv")
 
-  $nativeConfigs = @("git", "ripgrep", "atuin", "tig", "lazygit", "yazi")
+  $nativeConfigs = @("git", "ripgrep", "atuin", "tig", "lazygit", "yazi", "bat")
   $configSource = Join-Path $dotDir ".config"
   $configTarget = Join-Path $homeDir ".config"
 
@@ -361,6 +373,15 @@ function Link-Configs {
       New-CoreUtilsSymlink $source $target
     }
   }
+}
+
+function Install-YaziPlugins {
+  if (-not (Get-Command ya -ErrorAction SilentlyContinue)) {
+    Warn "ya (yazi) not found — skipping yazi plugin installation."
+    return
+  }
+  Info "Installing yazi plugins and flavors..."
+  ya pkg install 2>&1 | Where-Object { $_ -notmatch '^\s*$' }
 }
 
 if ($Help -or $Command -eq "help" -or $Command -eq "--help" -or $Command -eq "-h") {
@@ -377,6 +398,7 @@ switch ($Command) {
     }
     if (-not $NoLink) {
       Link-Configs
+      Install-YaziPlugins
     }
     Success "Install complete. Restart your terminal."
   }
@@ -384,12 +406,14 @@ switch ($Command) {
     Clone-OrUpdate
     if (-not $NoLink) {
       Link-Configs
+      Install-YaziPlugins
     }
     Success "Update complete."
   }
   "link" {
     $InstallDir = Split-Path -Parent $ScriptPath
     Link-Configs
+    Install-YaziPlugins
     Success "Configs linked."
   }
   default {

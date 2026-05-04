@@ -15,6 +15,9 @@ gh
 atuin
 btop
 dust
+duf
+dua
+procs
 tealdeer
 xh
 yazi

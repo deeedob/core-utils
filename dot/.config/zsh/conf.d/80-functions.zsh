@@ -233,16 +233,31 @@ fenv() {
 
 # ---------------------------------------------------------------------------
 # fproc — Fuzzy process viewer / killer
+# Uses procs (colored output) when available; falls back to ps aux.
+# procs: PID is column 1. ps aux: PID is column 2.
 # ---------------------------------------------------------------------------
 fproc() {
-  local pid
-  pid=$(
-    ps aux | tail -n +2 | \
-      fzf --preview='echo {}' \
-          --preview-window=down:3:wrap \
-          --header='enter:kill(TERM)  ctrl-k:kill(KILL)' \
-          --bind='ctrl-k:execute-silent(echo {} | awk "{print \$2}" | xargs kill -9)' | \
-      awk '{print $2}'
-  )
+  local line pid
+  if (( $+commands[procs] )); then
+    line=$(
+      procs | \
+        fzf --ansi --header-lines=1 \
+            --preview='echo {}' \
+            --preview-window=down:3:wrap \
+            --header='enter:kill(TERM)  ctrl-k:kill(KILL)' \
+            --bind='ctrl-k:execute-silent(echo {1} | xargs kill -9)'
+    )
+    pid=$(awk '{print $1}' <<< "${line//$'\e['[0-9;]*m/}")
+  else
+    line=$(
+      command ps aux | \
+        fzf --header-lines=1 \
+            --preview='echo {}' \
+            --preview-window=down:3:wrap \
+            --header='enter:kill(TERM)  ctrl-k:kill(KILL)' \
+            --bind='ctrl-k:execute-silent(echo {} | awk "{print \$2}" | xargs kill -9)'
+    )
+    pid=$(awk '{print $2}' <<< "$line")
+  fi
   [[ -n "$pid" ]] && kill "$pid"
 }
