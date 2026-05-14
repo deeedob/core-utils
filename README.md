@@ -19,8 +19,8 @@ curl -fsSL https://raw.githubusercontent.com/deeedob/core-utils/main/bootstrap.c
 Or clone manually:
 
 ```bash
-git clone --recurse-submodules https://github.com/deeedob/core-utils ~/.local/share/core-utils
-cd ~/.local/share/core-utils
+git clone --recurse-submodules https://github.com/deeedob/core-utils
+cd core-utils
 bash bootstrap.cmd install
 ```
 

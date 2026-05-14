@@ -9,7 +9,6 @@ CORE_UTILS_WINDOWS
 set -euo pipefail
 
 REPO_URL="https://github.com/deeedob/core-utils.git"
-INSTALL_DIR="${CORE_UTILS_DIR:-$HOME/.local/share/core-utils}"
 SCRIPT_PATH="${BASH_SOURCE[0]:-$0}"
 
 info()    { printf '\033[0;34m[core-utils]\033[0m %s\n' "$*"; }
@@ -28,7 +27,11 @@ Commands:
   link      Link configs from the current checkout only
 
 Environment:
-  CORE_UTILS_DIR  Override install directory (default: ~/.local/share/core-utils)
+  CORE_UTILS_DIR  Override install directory
+
+Defaults:
+  Local checkout: directory containing bootstrap.cmd
+  Piped install:  ./core-utils
 USAGE
 }
 
@@ -53,8 +56,34 @@ detect_distro() {
 }
 
 script_dir() {
-  cd "$(dirname "$SCRIPT_PATH")" && pwd
+  cd -P "$(dirname "$SCRIPT_PATH")" && pwd
 }
+
+is_local_script() {
+  [[ -f "$SCRIPT_PATH" ]] || return 1
+  [[ "$SCRIPT_PATH" != /dev/fd/* ]] || return 1
+  [[ "$SCRIPT_PATH" != /proc/self/fd/* ]] || return 1
+}
+
+is_core_utils_tree() {
+  local dir="$1"
+  [[ -f "$dir/bootstrap.cmd" && -d "$dir/dot" && -d "$dir/packages" ]]
+}
+
+default_install_dir() {
+  local dir
+  if is_local_script; then
+    dir="$(script_dir)"
+    if [[ -d "$dir/.git" ]] || is_core_utils_tree "$dir"; then
+      printf '%s\n' "$dir"
+      return
+    fi
+  fi
+
+  printf '%s\n' "$PWD/core-utils"
+}
+
+INSTALL_DIR="${CORE_UTILS_DIR:-$(default_install_dir)}"
 
 read_pkg_list() {
   local file="$1"
@@ -142,6 +171,8 @@ clone_or_update() {
     info "Updating existing repo..."
     git -C "$INSTALL_DIR" pull --ff-only
     git -C "$INSTALL_DIR" submodule update --init --recursive --remote --merge
+  elif is_core_utils_tree "$INSTALL_DIR"; then
+    info "Using local core-utils checkout at $INSTALL_DIR..."
   else
     info "Cloning core-utils to $INSTALL_DIR..."
     git clone --recurse-submodules "$REPO_URL" "$INSTALL_DIR"
@@ -267,7 +298,33 @@ param(
 $ErrorActionPreference = "Stop"
 $RepoUrl = "https://github.com/deeedob/core-utils.git"
 $ScriptPath = $env:CORE_UTILS_BOOTSTRAP
-$InstallDir = if ($env:CORE_UTILS_DIR) { $env:CORE_UTILS_DIR } else { Join-Path $env:USERPROFILE ".local\share\core-utils" }
+
+function Test-CoreUtilsTree($Path) {
+  if (-not $Path) { return $false }
+  return (
+    (Test-Path -LiteralPath (Join-Path $Path "bootstrap.cmd")) -and
+    (Test-Path -LiteralPath (Join-Path $Path "dot")) -and
+    (Test-Path -LiteralPath (Join-Path $Path "packages"))
+  )
+}
+
+function Get-ScriptDir {
+  if ($ScriptPath -and (Test-Path -LiteralPath $ScriptPath)) {
+    return (Resolve-Path -LiteralPath (Split-Path -Parent $ScriptPath)).Path
+  }
+  return $null
+}
+
+function Get-DefaultInstallDir {
+  $scriptDir = Get-ScriptDir
+  if ($scriptDir -and ((Test-Path -LiteralPath (Join-Path $scriptDir ".git")) -or (Test-CoreUtilsTree $scriptDir))) {
+    return $scriptDir
+  }
+
+  return Join-Path (Get-Location) "core-utils"
+}
+
+$InstallDir = if ($env:CORE_UTILS_DIR) { $env:CORE_UTILS_DIR } else { Get-DefaultInstallDir }
 
 function Show-Usage {
   @"
@@ -280,7 +337,11 @@ Commands:
   link      Link configs from the current checkout only
 
 Environment:
-  CORE_UTILS_DIR  Override install directory (default: %USERPROFILE%\.local\share\core-utils)
+  CORE_UTILS_DIR  Override install directory
+
+Defaults:
+  Local checkout: directory containing bootstrap.cmd
+  Piped install:  .\core-utils
 "@ | Write-Host
 }
 
@@ -318,6 +379,8 @@ function Clone-OrUpdate {
     Info "Updating existing repo..."
     git -C $InstallDir pull --ff-only
     git -C $InstallDir submodule update --init --recursive --remote --merge
+  } elseif (Test-CoreUtilsTree $InstallDir) {
+    Info "Using local core-utils checkout at $InstallDir..."
   } else {
     Info "Cloning core-utils to $InstallDir..."
     git clone --recurse-submodules $RepoUrl $InstallDir
